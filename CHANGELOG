@@ -1,0 +1,9 @@
+# Changelog
+
+## [Unreleased]
+### Changed
+- Keep track of a significant changes here before releasing as a version
+
+## [0.0.1] - 2019-01-21
+### Added
+- Added my first script and loaded in data
