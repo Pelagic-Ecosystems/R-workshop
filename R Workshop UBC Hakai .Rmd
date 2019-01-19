@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(lubridate)
+library(here)
 
 ```
 
@@ -777,7 +778,7 @@ download.file(url="https://ndownloader.figshare.com/files/2292169",
 You are now ready to load the data:
 
 ```{r, eval=TRUE,  purl=FALSE}
-surveys <- read_csv("raw_data/portal_data_joined.csv")
+surveys <- read_csv(here("raw_data", "portal_data_joined.csv"))
 ```
 
 This statement doesn't produce any output because assignments don't display anything. If we want to check that our data has been
@@ -943,7 +944,7 @@ To learn more about **`dplyr`** and **`tidyr`** after the workshop, you may want
 
 
 ```{r, results = 'hide', purl = FALSE}
-surveys <- read_csv("raw_data/portal_data_joined.csv")
+surveys <- read_csv(here("raw_data", "portal_data_joined.csv"))
 
 ## inspect the data
 str(surveys)
@@ -1497,7 +1498,7 @@ surveys_spread %>%
 
 ```
 
-## Exporting data
+## Exporting data and ensuring reprocibility
 
 Now that you have learned how to use **`dplyr`** to extract information from
 or summarize your raw data, you may want to export these new data sets to share
@@ -1507,12 +1508,23 @@ Similar to the `read_csv()` function used for reading CSV files into R, there is
 a `write_csv()` function that generates CSV files from data frames.
 
 ```{r}
-write_csv(surveys_spread, "raw_data/surveys_spread.csv")
+write_csv(surveys_spread, here("processed_data", "surveys_spread.csv"))
 ```
 
+* Knit your document
+
+* Commit, Pull, Push
+
+Pretend we just completed a significant chapter of our work:
+
+* Update CHANGELOG
+
+* Make a release
 
 
-# Analyze
+Questions?
+
+# Analyzing Data
 
 ## Importing Data
 
@@ -1555,7 +1567,11 @@ The page documenting the API usage can be found [here](https://hakaiinstitute.gi
 
 Once you're happy with the formatting and filtering you've applied to your data make sure to write a new data file that you can read in from your separate analysis script.
 
-`write_csv(here("data", "my_data.csv"))`
+In the Console:!!
+
+`write_csv(here("raw_data", "my_data.csv"))`
+
+
 ## Annoying things that will get you
 
 ### Factors
