@@ -1,16 +1,10 @@
 ---
-title: "R Workshop UBC Hakai"
-author: "Brett Johnson"
-date: "1/18/2019"
+title: "R Workshop for the Pelagic Ecosystems Lab and Hakai Affiliates at UBC"
+author: "Data Carpentry Contributors, Brett Johnson"
+date: "2019-01-21"
 output: bookdown::pdf_document2
 ---
 
----
-title: "R Projects Workshop for the Pelagic Ecosystems Lab and Hakai Affiliates at UBC"
-author: "Brett Johnson"
-date: "2019/01/16"
-output: bookdown::pdf_document2
----
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -23,7 +17,16 @@ library(here)
 
 # Pre-workshop material
 
-Did you successfully install and set up all the tools necessary for this workshop? If not do not pass go, do not collect $200. See [README](https://github.com/Br-Johnson/2019-01-21-UBCIOF/blob/gh-pages/README.md)
+Did you successfully install and set up all the tools necessary for this workshop?
+
+* Download Slack
+* Update or install R
+* Update of install R-Studio
+* Update or instal pakcages
+* Get an account for the Hakai Data Portal from data@hakai.org
+* Get Git and GitHub set up
+
+See [README](https://github.com/Br-Johnson/2019-01-21-UBCIOF/blob/gh-pages/README.md)
 
 # Introduction
 
@@ -1427,7 +1430,7 @@ surveys_spread %>%
 
 ```
 
-### Getting back crappy data from collaborators
+## Sending Tidy Data to Hakai
 
 Lets go through a normal scenario where you've sent your sample off to an analytical lab or collaborator, having established your Data Management Collaboration Framework, to get you some results for your sample. Unfortunately the data are a mess and not tidy at all :(
 
