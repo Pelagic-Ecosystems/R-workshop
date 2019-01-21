@@ -21,7 +21,7 @@ library(here)
 
 ```
 
-# Did you do your homework?
+# Pre-workshop material
 
 Did you successfully install and set up all the tools necessary for this workshop? If not do not pass go, do not collect $200. See [README](https://github.com/Br-Johnson/2019-01-21-UBCIOF/blob/gh-pages/README.md)
 
@@ -29,11 +29,11 @@ Did you successfully install and set up all the tools necessary for this worksho
 
 Why am I giving this workshop?
 
-* Facilitate the process of getting specific results from University affiliates back into the Hakai Ecological Information Management Database, and Hakai Data Catalogue.
+* Take a team based approach to move the lab forward with a modern, collaborative, and reproducible set of methods
+
+* Facilitate the process of feeding results from University affiliates back into the Hakai Ecological Information Management Database, and Hakai Data Catalogue.
 
 * Reduce the amount of data processing strain on Hakai by providing training to others
-
-* Take a team based approach to move the lab forward with a modern, collaborative, and reproducible set of methods
 
 * Make your lives as researchers easier and more fun
 
@@ -57,20 +57,22 @@ What questions remain for them about how to do a data analysis?
 
 The objectives of this workshop are:
 
-* Become familiar with tools to manage and analyze data efficiently
-  - Write code in R-Studio
-  - Use `tidyverse`, `dplyr`, `ggplot2` and `tidyr` R packages to analyze your data
-  - Use Git and GitHub version control and a changelog 
+1. Become familiar with tools to manage and analyze data efficiently
+  + Write code in R-Studio
+  + Use `tidyverse`, `dplyr`, `ggplot2` and `tidyr` R packages to analyze your data
+  + Use Git and GitHub version control and a changelog 
 
-* Create reproducible analyses
-  - You can easily re-run your code and analysis when you get new data
-  - Others can easily find your code and understand the steps you took to analyze your data
-  - Raw data are available
+2. Produce well-documented tidy data-sets that have excellent provenance
+  + Data sets contain a change log with a version history of what has changed and the steps used to process data
+  + All variables in the dataset are defined in a data dictionary
+  + Laboratory, and analytical methods are thoroughly described
+  
+3. Create reproducible analyses
+  + You can easily re-run your code and analysis when you get new data
+  + Others can easily find your code and understand the steps you took to analyze your data
+  + Raw data are available
 
-* Produce well-documented tidy data-sets that have excellent provenance
-  - Data sets contain a change log with a version history of what has changed and the steps used to process data
-  - All variables in the dataset are defined in a data dictionary
-  - Laboratory, and analytical methods are thoroughly described
+![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
 
 ## Background
 
@@ -225,6 +227,8 @@ ggplot(data = mpg) +
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, color = class)) +
   geom_smooth(mapping = aes(x = displ, y = hwy), method = lm)
+
+ggsave(here("figs", "mpg.png"))
 ```
 
 
@@ -236,9 +240,10 @@ ggplot(data = mpg) +
 >
 > * Understand the benefits of version control and set up a GitHub Repository
 > * Describe the benefits of a Project Oriented Workflow
-> * Organize files and directories for a set of analyses as an R
-> * Project, understand the purpose of the working directory, and the `here()` package
->  * Explain when to use the source editor vs. the console
+> * Organize files and directories for a set of analyses as an R project
+> * Understand the purpose of the working directory, and the `here()` package
+> * Explain when to use the source editor vs. the console
+
 ------------
 
 ## Version Control
@@ -252,121 +257,6 @@ GitHub provides a home for your Git-based projects on the internet. If you have 
 You can think of having an additional ‘save’ that comes from version control. This additional save, in git terms is known as a _commit_. You save your files like you normally would, but every once in a while you commit your files as an official version to be remembered. A commit can be thought of as a bullet point in the to do list of your analysis, and each commit you make must be accompanied by a message. For example; ‘read in data and tidy it up’, or ‘remove observations from non-standard sampling event, and re-fit GLM’. Git tracks the commits you make in R-Studio locally on your own computer. When you are ready for a series of commits to be made public, you _push_ your commits to your remote repository at GitHub.
 
 Read [Happy Git with R](https://happygitwithr.com) by Jenny Bryan for more details!
-
-### New Project, GitHub first.
-
-Let's set up your first project. 
-
-Again fromm [Jenny Bryan](https://happygitwithr.com), edited for this use-case.
-
-We create a new Project, with the preferred "GitHub first, then RStudio" sequence. Why do we prefer this? Because this method of copying the Project from GitHub to your computer also sets up the local Git repository for immediate pulling and pushing.
-
-### Make a repo on GitHub
-
-**Do this once per new project.**
-
-Go to <https://github.com/pelagic-ecosystems> and make sure you are logged in.
-
-Click on "Repositories", then click the green "New" button.
-
-Repository name: `your-study-discipline` 
-Public  
-YES Initialize this repository with a README
-
-Click the big green button "Create repository."
-
-Copy the HTTPS clone URL to your clipboard via the green "Clone or Download" button. Or copy the SSH URL if you chose to set up SSH keys.
-
-### New RStudio Project
-
-In RStudio, start a new Project:
-
-  * *File > New Project > Version Control > Git*. In the "repository URL" paste the URL of your new GitHub repository. It will be something like this `https://github.com/pelagic-ecosystems/your-study-discipline.git`.
-  * Create this project in a new folder you should create now called R Projects.
-  * Suggest you "Open in new session".
-  * Click "Create Project" to create a new directory, which will be all of these things:
-    - a directory or "folder" on your computer
-    - a Git repository, linked to a remote GitHub repository
-    - an RStudio Project
-  * **In the absence of other constraints, I suggest that all of your R projects have exactly this set-up.**
-
-This should download the `README.md` file that we created on GitHub in the previous step. Look in RStudio's file browser pane for the `README.md` file.
-
-There's a big advantage to the "GitHub first, then RStudio" workflow: the remote GitHub repo is added as a remote for your local repo and your local `master` branch is now tracking `master` on GitHub. This is a technical but important point about Git. The practical implication is that you are now set up to push and pull. No need to fanny around setting up Git remotes and tracking branches on the command line.
-
-### Make local changes, save, commit
-
-**Do this every time you finish a valuable chunk of work, probably many times a day.**
-
-From RStudio, modify the `README.md` file, e.g., by adding the line "This is a line from RStudio". Save your changes.
-
-Commit these changes to your local repo. How?
-
-  * Click the "Git" tab in upper right pane
-  * Check "Staged" box for any files whose existence or modifications you want to commit.
-    - To see more detail on what's changed in file since the last commit, click on "Diff" for a Git pop-up
-  * If you're not already in the Git pop-up, click "Commit"
-  * Type a message in "Commit message", such as "Commit from RStudio".
-  * Click "Commit"
-
-### Push your local changes to GitHub
-
-**Do this a few times a day, but possibly less often than you commit.**
-
-You have new work in your local Git repository, but the changes are not online yet.
-
-This will seem counterintuitive, but first let's stop and pull from GitHub.
-
-Why? Establish this habit for the future! If you make changes to the repo in the browser or from another machine or (one day) a collaborator has pushed, you will be happier if you pull those changes in before you attempt to push.
-  
-Click the blue "Pull" button in the "Git" tab in RStudio. I doubt anything will happen, i.e. you'll get the message "Already up-to-date." This is just to establish a habit.
-
-Click the green "Push" button to send your local changes to GitHub. You should see some message along these lines.
-
-``` bash
-[master dc671f0] blah
- 3 files changed, 22 insertions(+)
- create mode 100644 .gitignore
- create mode 100644 myrepo.Rproj
-```
-
-### Confirm the local change propagated to the GitHub remote
-
-Go back to the browser. I assume we're still viewing your new GitHub repo.
-
-Refresh.
-
-You should see the new "This is a line from RStudio" in the README.
-
-If you click on "commits," you should see one with the message "Commit from RStudio".
-
-### Make a change on GitHub
-
-Click on README.md in the file listing on GitHub.
-
-In the upper right corner, click on the pencil for "Edit this file".
-
-Add a line to this file, such as "Line added from GitHub."
-
-Edit the commit message in "Commit changes" or accept the default.
-
-Click the big green button "Commit changes."
-
-### Pull from GitHub
-
-Back in RStudio locally ...
-
-Inspect your README.md. It should NOT have the line "Line added from GitHub". It should be as you left it. Verify that.
-
-Click the blue Pull button.
-
-Look at README.md again. You should now see the new line there.
-
-Now just ... repeat. Do work somewhere. Commit it. Push it or pull it\* depending on where you did it, but get local and remote "synced up". Repeat.
-
-\* Note that in general (and especially in future when collaborating with other developers) you will usually need to pull changes from the remote (GitHub) before pushing the local changes you have made. For this reason, it's a good idea to try and get into the habit of pulling before you attempt to push.
-
-Questions?
 
 ## The working directory
 
@@ -405,9 +295,9 @@ for 'Save workspace to .RData' on exit.'
 Using a consistent folder structure across your projects will help keep things
 organized, and will also make it easy to find/file things in the future. This
 can be especially helpful when you have multiple projects. In general, you may
-create directories (folders) for **scripts**, **raw_data**, **processed_data**, **figs**, and **documents**. You will also wante to creat a CHANGELOG file, which will track the major versions of your data, scripts, and figures.
+create directories (folders) for **scripts**, **read_data**, **write_data**, **figs**, and **documents**. You will also wante to creat a CHANGELOG file, which will track the major versions of your data, scripts, and figures.
 
- - **`raw_data/`** Use this folder to store your raw data and don't ever change your raw data!.
+ - **`read_data/`** Use this folder to store your raw data and don't ever change your raw data!.
    For the sake
    of transparency and [provenance](https://en.wikipedia.org/wiki/Provenance),
    you should *always* keep a copy of your raw data accessible and do as much
@@ -415,7 +305,7 @@ create directories (folders) for **scripts**, **raw_data**, **processed_data**, 
    rather than manually in excel which you can't reproduce) as possible. 
    Separating raw data from processed data
    is critical.
- - **`processed_data/`** Save derived data sets here after cleaning or summarizing.
+ - **`write_data/`** Save derived data sets here after cleaning or summarizing.
  - **`documents/`** This would be a place to keep outlines, drafts, and other
    text.
  - **`scripts/`** This would be the location to keep your R scripts for
@@ -428,14 +318,14 @@ needs, but these should form the backbone of your working directory.
 
 ![Example of a working directory structure.](img/working-directory-structure.png)
 
-For this workshop, we will need a `raw_data/` folder to store our raw data, and we
-will use `processed_data/` for when we learn how to export data as CSV files, and
+For this workshop, we will need a `read_data/` folder to store our raw data, and we
+will use `write_data/` for when we learn how to export data as CSV files, and
 `figs/` folder for the figures that we will save.
 
 * Under the `Files` tab on the right of the screen, click on `New Folder` and
   create a folder named `data` within your newly created working directory
-  (e.g., `~/data-carpentry/raw_data`). (Alternatively, type `dir.create("data")` at
-  your R console.) Repeat these operations to create a `processed_data/` and a
+  (e.g., `~/data-carpentry/read_data`). (Alternatively, type `dir.create("data")` at
+  your R console.) Repeat these operations to create a `write_data/` and a
   `figs/` folders.
 * Again under the `Files` tab, click on `New File` and create a new `Text File`. Type #CHANGELOG on the first line and save the new file as CHANGELOG.TXT in the root of your working directory.
 
@@ -764,7 +654,7 @@ load into memory the content of the CSV file as an object of class `data.frame`.
 Inside the download.file command, the first entry is a character string with the source URL 
 ("https://ndownloader.figshare.com/files/2292169"). This source URL downloads a CSV file from 
 figshare. The text after the comma ("data/portal_data_joined.csv") is the destination of the 
-file on your local machine. You'll need to have a folder on your machine called "raw_data" where 
+file on your local machine. You'll need to have a folder on your machine called "read_data" where 
 you'll download the file. So this command downloads a file from figshare, names it 
 "portal_data_joined.csv," and adds it to a preexisting folder named "data."
 
@@ -772,13 +662,13 @@ you'll download the file. So this command downloads a file from figshare, names 
 library(tidyverse)
 
 download.file(url="https://ndownloader.figshare.com/files/2292169",
-              destfile = "raw_data/portal_data_joined.csv"))
+              destfile = "read_data/portal_data_joined.csv")
 ```
 
 You are now ready to load the data:
 
 ```{r, eval=TRUE,  purl=FALSE}
-surveys <- read_csv(here("raw_data", "portal_data_joined.csv"))
+surveys <- read_csv(here("read_data", "portal_data_joined.csv"))
 ```
 
 This statement doesn't produce any output because assignments don't display anything. If we want to check that our data has been
@@ -944,7 +834,7 @@ To learn more about **`dplyr`** and **`tidyr`** after the workshop, you may want
 
 
 ```{r, results = 'hide', purl = FALSE}
-surveys <- read_csv(here("raw_data", "portal_data_joined.csv"))
+surveys <- read_csv(here("read_data", "portal_data_joined.csv"))
 
 ## inspect the data
 str(surveys)
@@ -1300,7 +1190,48 @@ surveys %>%
 ##  columns `year`, `genus`, `species_id`, and `weight`.
 ```
 
-# END OF DAY 1
+## Exporting data
+
+Now that you have learned how to use **`dplyr`** to extract information from
+or summarize your raw data, you may want to export these new processed data sets to share them with your collaborators or for archival.
+
+Never write to `read_data/`
+
+Similar to the `read_csv()` function used for reading CSV files into R, there is
+a `write_csv()` function that generates CSV files from data frames.
+
+```{r}
+write_csv(surveys_sml, here("write_data", "surveys_sml.csv"))
+```
+
+* Knit your document
+
+* Commit, Pull, Push
+
+Questions?
+
+# DAY 2
+
+## Objectives
+
+The objectives of this workshop are:
+
+1. Become familiar with tools to manage and analyze data efficiently
+  + Write code in R-Studio
+  + Use `tidyverse`, `dplyr`, `ggplot2` and `tidyr` R packages to analyze your data
+  + Use Git and GitHub version control and a changelog 
+
+2. Produce well-documented tidy data-sets that have excellent provenance
+  + Data sets contain a change log with a version history of what has changed and the steps used to process data
+  + All variables in the dataset are defined in a data dictionary
+  + Laboratory, and analytical methods are thoroughly described
+  
+3. Create reproducible analyses
+  + You can easily re-run your code and analysis when you get new data
+  + Others can easily find your code and understand the steps you took to analyze your data
+  + Raw data are available
+
+![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
 
 # Tidy Data in Spreadsheets
 
@@ -1334,8 +1265,6 @@ a variable.
 
 We can do both these of transformations with two `tidyr` functions, `spread()`
 and `gather()`.
-
-
 
 ### Spreading
 
@@ -1498,31 +1427,29 @@ surveys_spread %>%
 
 ```
 
-## Exporting data and ensuring reprocibility
+### Getting back crappy data from collaborators
 
-Now that you have learned how to use **`dplyr`** to extract information from
-or summarize your raw data, you may want to export these new data sets to share
-them with your collaborators or for archival.
+Lets go through a normal scenario where you've sent your sample off to an analytical lab or collaborator, having established your Data Management Collaboration Framework, to get you some results for your sample. Unfortunately the data are a mess and not tidy at all :(
 
-Similar to the `read_csv()` function used for reading CSV files into R, there is
-a `write_csv()` function that generates CSV files from data frames.
+![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
 
-```{r}
-write_csv(surveys_spread, here("processed_data", "surveys_spread.csv"))
-```
+* Lets open up the data in a spreadsheet
 
-* Knit your document
+* Programatically tidying this data is too much work, so we're just going to edit the spreadsheet manually and describe what was done to the data in our CHANGELOG
 
-* Commit, Pull, Push
+* Give your changelog a new version because getting a new data set back is a very significant change in your project history!
 
-Pretend we just completed a significant chapter of our work:
+* Save new data to `write_data/` folder and never touch raw data again.
 
-* Update CHANGELOG
+* Update CHANGELOG with new version and make a release on GitHUB with the
 
-* Make a release
+* Update README File with methods used by DFO lab procesing
 
+* Commit!
 
-Questions?
+* Send data, CHANGELOG, README, and DATA DICTIONARY files to Hakai
+
+![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
 
 # Analyzing Data
 
@@ -1530,71 +1457,223 @@ Questions?
 
 ### From Hakai Data Portal API
 
+Start a new data_wrangling script: File > New File > R Markdown > html output
+
 It is possible to download data from the Hakai EIMS Data Portal database directly from R Studio. This is accomplished by interacting with an application programming interface (API) that was developed for downloading data from Hakai's data portal.
 
 Below is a quickstart example of how you can download some chlorophyll data. Run the code below one line at a time. When you run the `client <- ...` line a web URL will be displayed in the console. Copy and paste that URL into your browser. This should take to you a webpage that displays another web URL, this is your authentication token that permits you access to the database. Copy and paste the URL into the console in R where it tells you to do so.
 
 
-```
+```{r, eval=FALSE}
 # Run this first line only if you haven't installedt the R API before
-devtools::install_github("HakaiInstitute/hakai-api-client-r", subdir='hakaiApi')
+#devtools::install_github("HakaiInstitute/hakai-api-client-r", subdir='hakaiApi')
 
 library('hakaiApi')
+library(tidyverse)
 
 # Run this line independently before the rest of the code to get the API authentication
 client <- hakaiApi::Client$new() # Follow stdout prompts to get an API token
 
 # Make a data request for chlorophyll data
-endpoint <- sprintf("%s/%s", client$api_root, "eims/views/output/chlorophyll?limit=50")
-data <- client$get(endpoint)
+endpoint <- sprintf("%s/%s", client$api_root, "eims/views/output/chlorophyll?limit=-1")
+chla <- client$get(endpoint)
 
 # Print out the data
-print(data)
+print(chla)
+
+# We're going to want to use this data later so lets save it
+
+write_csv(chla, here("read_data", "chla.csv"))
 ```
 
 By running this code you should see chlorophyll data in your environment. 
-The above code can be modified to select different datasets other than chlorophyll and filter based on different logical parameters you set. This is accomplished by editing the text after the ? in `"eims/views/output/chlorophyll?limit=50"`.
+The above code can be modified to select different datasets other than chlorophyll and filter based on different logical parameters you set. This is accomplished by editing the text after the ? in
+
+`"eims/views/output/chlorophyll?limit=50"`.
 
 The formula you set after the question mark is known as query string filtering. To learn how to filter your data [read this](https://github.com/HakaiInstitute/hakai-api/blob/master/docs/querying-data.md). 
 
 To read generally about the API and how to use it for your first time [go here](https://github.com/HakaiInstitute/hakai-api/blob/master/docs/simplified-api-documentation.md#what-is-the-hakai-api).
 
-If you don't want to learn how to write a querystring yourself there is an option to just copy and paste the querystring from the [EIMS Data Portal](https://hecate.hakai.org/portal2/). Use the portal to select the sample type, and dates and sites you'd like to download as you normally would. To copy the querystring go to the top right of the window where it says Options and click 'Display API query'. You can copy that string in to your endpoint definition in R. Just be sure to copy that string starting from `eims/views/...`, excluding `https://hecate.hakai.org/api/` and then paste that into the definitions of your endpoint and surround that string with single quotes ie: `endpoint <- sprintf("%s/%s", client$api_root, 'eims/views/output/chlorophyll?date>=2016-11-01&date<2018-11-20&work_area&&{"CALVERT"}&site_id&&{"KC13","MG4"}&survey&&{"KWAK","MACRO_MGEO"}&limit=-1'`
+If you don't want to learn how to write a querystring yourself there is an option to just copy and paste the querystring from the [EIMS Data Portal](https://hecate.hakai.org/portal2/). Use the portal to select the sample type, and dates and sites you'd like to download as you normally would. To copy the querystring go to the top right of the window where it says Options and click 'Display API query'. You can copy that string in to your endpoint definition in R. Just be sure to copy that string starting from `eims/views/...`, excluding `https://hecate.hakai.org/api/` and then paste that into the definitions of your endpoint and surround that string with single quotes ie: 
 
+## Sockeye condition analysis
+
+Say we want to look at the condition of fish in the Discovery Islands and how that correlates to chl a concentrations in the northern Strait of Georgia.
+
+Let's download all the fish samples from the Juvenile Salmon Program from Quadra. 
 Make sure to add &limit=-1 at the end of your query string so that not only the first 20 results are downloaded, but rather everything matching your query string is downloaded.
 
-The page documenting the API usage can be found [here](https://hakaiinstitute.github.io/hakai-api/)
+```{r import data, eval=FALSE}
+fish_endpoint <- sprintf("%s/%s", client$api_root, 'eims/views/output/jsp_fish?work_area%26%26{"QUADRA"}&limit=-1')
 
-Once you're happy with the formatting and filtering you've applied to your data make sure to write a new data file that you can read in from your separate analysis script.
+fish <- client$get(fish_endpoint)
 
-In the Console:!!
+View(fish)
 
-`write_csv(here("raw_data", "my_data.csv"))`
+write_csv(fish, here("read_data", "fish.csv"))
+```
+
+OK great we've got our data from the Portal. Now what?!
+
+Let's go back to our analysis script and do some exploratory data analysis.
+
+
+```{r}
+
+fish <- read_csv(here("read_data", "fish.csv"))
+
+# Lets view how many observations of each fish we have
+fish %>% 
+  count(species)
+
+# How many spp. from each site do we have?
+fish %>% 
+  group_by(site_id) %>% 
+  count(species)
+
+# Looks like we caught the most fish from D09 so let's just use that
+fish_d09 <- fish %>% 
+  filter(site_id == "D09") %>% 
+# Run above first and then add below
+  
+  filter(dissection_status == "DISSECTED") %>% 
+  select(hakai_id, jsp_survey_id, seine_id, date, species, site_id,
+        fork_length, weight)
+
+# OK let's look at the structure of fish_d09 to see how each column is classified
+str(fish_d09)
+
+# Species is treated as a character but should be a factor
+fish_d09 %>% 
+  count(species)
+```
+
+We want to know the condition of the fish, so let's calculate Fulton's condition factor (k) and make that a new column.
+
+```{r}
+
+fish_d09 <- fish_d09 %>% 
+  mutate(k = (10 ^ 5 * weight) / fork_length ^ 3)
+
+# Looks like some fish don't have their fork_length taken so let's get rid of those (we took standard lengths when we couldn't measure fork_length, we could model what fork length should be based on standard length to have a bigger sample size but lets not bother right now).
+
+fish_d09 <- fish_d09 %>% 
+  drop_na(k)
+```
 
 
 ## Annoying things that will get you
 
 ### Factors
+
+Using `read_csv()` from `tidyverse` treats words as characters.
+
+Using `read.csv()` from base treats words as factors; not great.
+
+Long story short: Use read_csv and then you get to decide what's treated as a factor. 
+
+```{r}
+# Lets look at class of the species column
+class(fish_d09$species)
+
+# Character is not ideal. We want to use species as a categorical grouping variable later on in plots so we should conver it to a factor
+fish_d09$species <- factor(fish_d09$species)
+
+# Check the class of species again
+class(fish_d09$species)
+
+# Check structure
+str(fish_d09)
+
+levels(fish_d09$species)
+```
+
 ### Dates
-### Joining data
-## Advanced Visualization
-## CHANGELOG
 
-Having commit messages, and a history of what you've done is great. But if you think of your commit messages as if they are bullet points in your to-do list for your analysis, sometimes you might want a broader overview of what all those bullet points amount to. That's where a changelog comes in. 
+`read_csv()` from `tidyverse` reads ISO standard date formats (yyyy-mm-dd) as date classes.
 
-A changelog will keep track of the major versions of your files. So when you make a major modification, or complete a major component of your analysis you should give it a version number and summarize what changed since your last version, in your CHANGELOG file.
+`read.csv()` from base R reads them as characters.
 
-[Keep a changelog](https://keepachangelog.com/en/1.0.0/)
+Another long story short: Use `read_csv()`
 
-Always add newest versions to the top of the file. 
+```{r}
+class(fish_d09$date)
+```
 
-Tag your commit message with a release version on GitHub, so that the version of your repository matches the version of your changelog. More on that later.
+The `lubridate` package has a lot of nice functions for working with dates.
+
+We already saw how easy it was to extract a year from a date variable.
+
+Say we want to plot look at lengths and weights by month, or by week, or by julian day. We can easlily do that with `lubridate`
+
+```{r}
+library(lubridate)
+
+fish_d09 <- fish_d09 %>% 
+  mutate(year = year(date),
+         month = month(date),
+         week = week(date),
+         yday = yday(date))
+```
+
+Questions?
+
+## Joining data
+
+Ok let's say that we want to look at how the condition of the fish is correlated with chlorophyll concentrations.
+
+Well we need some chlorophyll data. Oh yeah we already downloaded all the chl a data from the portal
+
+```{r}
+chla <- read_csv(here("read_data", "chla.csv"))
+
+# so much data
+chla_qu39 <- chla %>% 
+  filter(site_id == "QU39",
+         # keep only accurate values
+         chla_flag == "AV",
+         line_out_depth == 5) %>% 
+  select(date, chla_final)
+
+# I hate scientific notation
+options(scipen=999)
+
+chla_qu39
+```
+
+OK now lets join our fish table and our chla_qu39 table. But how?!
+
+We need a column in common (a primary key) between the two to be able to join the data sets nicely.
+
+Lets do that. How bout using date? Since we probably want to link the measurements based on when they were taken.
+
+```{r}
+chla_qu39 <- chla_qu39 %>% 
+  mutate(year = year(date),
+        week = week(date)) %>% 
+  group_by(year, week) %>% 
+  summarize(mean_chla = mean(chla_final),
+            n = n(),
+            sd = sd(chla_final))
+
+fish_chla <- dplyr::inner_join(fish_d09, chla_qu39, by = c("year", "week"))
+```
+
+```{r}
+fish_chla %>% 
+  ggplot(aes(x = mean_chla, y = k, colour = species)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_grid(year ~ .)
+  
+  
+```
+
+
+## Data Visualizaton
 
 ## Data Packaging
-
-
-# Bonus Material
-
 
 ## Collaboration with GitHub
 

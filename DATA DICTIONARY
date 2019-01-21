@@ -1,0 +1,17 @@
+# Data Dictionary
+
+hakai_id: the unique ID that will like samples back to fish
+
+stock_1:
+  - Description: the genetic stock identification produced that had the highest probability from DFO's CBAYES algorithm. 
+  - Units: none. 
+
+region_1:
+  - Description: The name of the region where stock_1 comes from.
+  - Units: See hakai_gsi_dfo for the categories of possible regions
+
+prob_1: 
+  - Description: The probability that this fish is stock_1
+  - Units: 0-1. No units per se
+
+and so on for every variable.
