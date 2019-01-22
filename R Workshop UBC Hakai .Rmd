@@ -1432,6 +1432,8 @@ surveys_spread %>%
 
 ## Sending Tidy Data to Hakai
 
+Download from slack teh hakai_dfo_gsi file
+
 Lets go through a normal scenario where you've sent your sample off to an analytical lab or collaborator, having established your Data Management Collaboration Framework, to get you some results for your sample. Unfortunately the data are a mess and not tidy at all :(
 
 ![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
@@ -1454,7 +1456,10 @@ Lets go through a normal scenario where you've sent your sample off to an analyt
 
 ![Affiliate Sample and Data Handling Workflow](img/DHWF.png)
 
+
 # Analyzing Data
+
+Show photo of Tidyverse Analysis Workflow
 
 ## Importing Data
 
@@ -1502,20 +1507,19 @@ If you don't want to learn how to write a querystring yourself there is an optio
 
 ## Sockeye condition analysis
 
-Say we want to look at the condition of fish in the Discovery Islands and how that correlates to chl a concentrations in the northern Strait of Georgia.
+Say we want to look at the condition of sockeye in the Discovery Islands and how that varies by genetic stock.
 
 Let's download all the fish samples from the Juvenile Salmon Program from Quadra. 
-Make sure to add &limit=-1 at the end of your query string so that not only the first 20 results are downloaded, but rather everything matching your query string is downloaded.
 
 ```{r import data, eval=FALSE}
 fish_endpoint <- sprintf("%s/%s", client$api_root, 'eims/views/output/jsp_fish?work_area%26%26{"QUADRA"}&limit=-1')
 
 fish <- client$get(fish_endpoint)
 
-View(fish)
-
 write_csv(fish, here("read_data", "fish.csv"))
 ```
+
+Make sure to add &limit=-1 at the end of your query string so that not only the first 20 results are downloaded, but rather everything matching your query string is downloaded.
 
 OK great we've got our data from the Portal. Now what?!
 
@@ -1524,7 +1528,7 @@ Let's go back to our analysis script and do some exploratory data analysis.
 
 ```{r}
 
-fish <- read_csv(here("read_data", "fish.csv"))
+fish <- read_csv(here::here("read_data", "fish.csv"))
 
 # Lets view how many observations of each fish we have
 fish %>% 
@@ -1535,7 +1539,7 @@ fish %>%
   group_by(site_id) %>% 
   count(species)
 
-# Looks like we caught the most fish from D09 so let's just use that
+# Looks like we caught the most fish from D09 so let's just use that site
 fish_d09 <- fish %>% 
   filter(site_id == "D09") %>% 
 # Run above first and then add below
@@ -1624,60 +1628,154 @@ Questions?
 
 ## Joining data
 
-Ok let's say that we want to look at how the condition of the fish is correlated with chlorophyll concentrations.
-
-Well we need some chlorophyll data. Oh yeah we already downloaded all the chl a data from the portal
+![joins](img/joins.png)
 
 ```{r}
-chla <- read_csv(here("read_data", "chla.csv"))
 
-# so much data
-chla_qu39 <- chla %>% 
-  filter(site_id == "QU39",
-         # keep only accurate values
-         chla_flag == "AV",
-         line_out_depth == 5) %>% 
-  select(date, chla_final)
+tidy_gsi <- read_csv(here::here("write_data", "tidy_gsi.csv"))
 
-# I hate scientific notation
-options(scipen=999)
+# Left joins retain all the values on the left
+left_join(fish_d09,tidy_gsi, by = 'hakai_id') 
 
-chla_qu39
+# Right joins retain all the values on the right
+right_join(fish_d09,tidy_gsi)
+
+# Full joins retain all the values on both sides
+full_join(fish_d09,tidy_gsi)
+
+# Inner joins retain only values that are in common in both 
+inner_join(fish_d09,tidy_gsi)
+
+# Anti joins shows you want doesn't have a match
+anti_join(fish_d09,tidy_gsi)
+
+so_gsi <- inner_join(fish_d09, tidy_gsi)
+
 ```
 
-OK now lets join our fish table and our chla_qu39 table. But how?!
+Ok let's say that we want to look at how the condition of sockeye varies by stock
 
-We need a column in common (a primary key) between the two to be able to join the data sets nicely.
+## Data Visualization
 
-Lets do that. How bout using date? Since we probably want to link the measurements based on when they were taken.
 
-```{r}
-chla_qu39 <- chla_qu39 %>% 
-  mutate(year = year(date),
-        week = week(date)) %>% 
-  group_by(year, week) %>% 
-  summarize(mean_chla = mean(chla_final),
-            n = n(),
-            sd = sd(chla_final))
+## Plotting with **`ggplot2`**
 
-fish_chla <- dplyr::inner_join(fish_d09, chla_qu39, by = c("year", "week"))
+**`ggplot2`** is a plotting package that makes it simple to create complex plots
+from data in a data frame. It provides a more programmatic interface for
+specifying what variables to plot, how they are displayed, and general visual
+properties. 
+
+**`ggplot2`** functions like data in the 'long' format, i.e., a column for every variable,
+and a row for every observation. Well-structured data will save you lots of time
+when making figures with **`ggplot2`**
+
+ggplot graphics are built step by step by adding new elements. Adding layers in
+this fashion allows for extensive flexibility and customization of plots.
+
+To build a ggplot, we will use the following basic template that can be used for different types of plots:
+
+```
+ggplot(data = <DATA>, mapping = aes(<MAPPINGS>)) +  <GEOM_FUNCTION>()
 ```
 
-```{r}
-fish_chla %>% 
-  ggplot(aes(x = mean_chla, y = k, colour = species)) +
-  geom_point() +
-  geom_smooth(method = lm) +
-  facet_grid(year ~ .)
+- use the `ggplot()` function and bind the plot to a specific data frame using the
+      `data` argument
+
+```{r, eval=FALSE, purl=FALSE}
+ggplot(data = surveys_complete)
+```
+
+- define a mapping (using the aesthetic (`aes`) function), by selecting the variables to be plotted and specifying how to present them in the graph, e.g. as x/y positions or characteristics such as size, shape, color, etc.
+
+```{r, eval=FALSE, purl=FALSE}
+ggplot(data = surveys_complete, mapping = aes(x = weight, y = hindfoot_length))
+```
+
+- add 'geoms' – graphical representations of the data in the plot (points, lines, bars). **`ggplot2`** offers many different geoms; we will use some 
+  common ones today, including:
   
-  
+      * `geom_point()` for scatter plots, dot plots, etc.
+      * `geom_boxplot()` for, well, boxplots!
+      * `geom_line()` for trend lines, time series, etc.  
+
+
+**Notes**
+
+- Anything you put in the `ggplot()` function can be seen by any geom layers
+  that you add (i.e., these are universal plot settings). This includes the x- and
+  y-axis mapping you set up in `aes()`.
+- You can also specify mappings for a given geom independently of the
+  mappings defined globally in the `ggplot()` function.
+- The `+` sign used to add new layers must be placed at the end of the line containing
+the *previous* layer. If, instead, the `+` sign is added at the beginning of the line
+containing the new layer, **`ggplot2`** will not add the new layer and will return an 
+error message.
+
+## **`ggplot2`** themes
+
+In addition to `theme_bw()`, which changes the plot background to white, **`ggplot2`**
+comes with several other themes which can be useful to quickly change the look
+of your visualization. The complete list of themes is available
+at <http://docs.ggplot2.org/current/ggtheme.html>. `theme_minimal()` and
+`theme_light()` are popular, and `theme_void()` can be useful as a starting
+point to create a new hand-crafted theme.
+
+The
+[ggthemes](https://jrnold.github.io/ggthemes/reference/index.html) package
+provides a wide variety of options (including an Excel 2003 theme).
+The [**`ggplot2`** extensions website](https://www.ggplot2-exts.org) provides a list
+of packages that extend the capabilities of **`ggplot2`**, including additional
+themes.
+
+```{r}
+# Exploratory data visualization
+
+so_gsi$stock_1 <- so_gsi$stock_1 %>% 
+  fct_infreq() %>% 
+  fct_rev()
+
+so_gsi %>% 
+  count(stock_1) %>% 
+  ggplot(aes(x = stock_1, y = n)) +
+           geom_point() + coord_flip()
 ```
 
+### Create your own visulization
 
-## Data Visualizaton
+We have chlorphyll data, stock ID data, fish data.
+
+Choose your own adventure.
+
+https://ggplot2.tidyverse.org/reference/
+
+Cookbook for R for formatting
+
+http://www.cookbook-r.com/Graphs/
 
 ## Data Packaging
 
+1. Zip up key parts of the analysis:
+  + write_data
+  + CHANGELOG
+  + README
+  + DATA DICTIONARY
+  + Data processing script
+  + Data analysis script
+  
+2. Name the zip file with a version that matches the CHANGELOG
+  + Put the zip file in your working directory
+  + Don't ever edit the zipped folder again!
+  
+3. Commit and push to GitHUB and make a release
+  + Go into GitHub and tag this commit with a version
+
+4. Let Brett Know!
+
+
 ## Collaboration with GitHub
 
+* Issues
+* Cloning a repository
+* Pull Requests
+* GitKraken
 
