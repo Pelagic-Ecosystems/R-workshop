@@ -317,3 +317,142 @@ long_surveys <- wide_surveys_gw %>%
 tidy_gsi <- read_csv(here::here("write_data", "tidy_gsi.csv"))
 ```
 
+
+# Analyzing Data
+
+## Importing from the Hakai Data Portal
+
+Switched to data_wrangling script to import data into our read_data file.
+
+We have chla data, fish data, and sockeye stock ID data. Let's start to analyze these data sets.
+
+```{r}
+fish <- read_csv(here::here("read_data", "fish.csv"))
+chla <- read_csv(here::here("read_data", "chla.csv"))
+tidy_gsi <- read_csv(here::here("write_data", "tidy_gsi.csv"))
+```
+
+```{r}
+fish %>% 
+  count(species)
+
+fish_d09 <- fish %>% 
+  filter(site_id == "D09") %>% 
+  select(hakai_id, jsp_survey_id, seine_id, date, species, site_id, fork_length, weight) %>% 
+  mutate(k = (10 ^ 5 * weight) / fork_length ^ 3) %>% 
+  drop_na(k)
+```
+
+## Factors
+
+```{r}
+str(fish_d09)
+
+class(fish_d09$species)
+
+# coerce a column to be a factor, do this:
+
+fish_d09$species <- factor(fish_d09$species)
+
+class(fish_d09$species)
+
+levels(fish_d09$species)
+```
+
+If you have factors that are numbers, don't try to do math with those factors. Under the hood R will be treating your factor levels as a different number.
+
+## Dates
+
+read_csv() treats ISO date standards (yyyy-mm-dd) as a DATE object
+read.csv() treats them as characters: not ideal
+
+Lubridate is a package for dealing with dates.
+
+```{r}
+library(lubridate)
+
+fish_d09$date <- as_date(fish_d09$date)
+
+class(fish_d09$date)
+
+
+# extract date components
+fish_d09 <- fish_d09 %>% 
+  dplyr::mutate(year = year(date),
+         month = month(date),
+         week = week(date),
+         yday = yday(date))
+
+
+```
+
+Lubrudate you can do math with dates
+
+* periods
+* intervals
+* durations
+
+# Joining Data
+
+Dat we have:
+
+* chla
+* tidy_gsi
+* fish_d09
+
+```{r}
+left_join(fish_d09, tidy_gsi, by = 'hakai_id') 
+
+right_join(fish_d09, tidy_gsi) 
+
+so_gsi <- inner_join(fish_d09, tidy_gsi, by = 'hakai_id') 
+
+anti_join(fish_d09, tidy_gsi)
+```
+
+## ggplot2
+
+To build a ggplot:
+
+ggplot(data = DATA, mapping = aes(MAPPINGS))
+  + GEOM_FUNCTION()
+
+```{r, eval = FALSE}
+# EXAMPLE
+ ggplot(data = surveys, mapping = aes(species, weight)) +
+  geom_point() 
+```
+
+```{r}
+ggplot(so_gsi, aes()) +
+  geom_point(aes(x = yday, y = fork_length)) +
+  geom_smooth(aes(x = yday, y = fork_length), method = lm) +
+  theme_classic() + 
+  facet_wrap(. ~ stock_1)
+  
+```
+
+```{r}
+fish %>% 
+  ggplot(aes(x = species, y = fork_length)) +
+  geom_boxplot() +
+  facet_wrap(year(date) ~ .)
+```
+
+```{r}
+chla %>% 
+  filter(work_area == "QUADRA") %>% 
+  ggplot(aes(x = date, y = log(chla_final))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth()
+```
+
+
+Cookbook for R
+How to adjust legends, make facets, adjsut axes
+
+http://cookbook-r.com/Graphs
+
+Geom list:
+
+https://ggplot2.tidyverse.org/reference/
