@@ -8,7 +8,8 @@ output: html_document
 ## Creating objects in R
 
 ```{r setup, warning=FALSE}
-
+library(tidyverse)
+#read in data files and load libraries in setup chunk
 ```
 
 
@@ -246,5 +247,73 @@ max_weights <- surveys %>%
 ## Export our data
 ```{r}
 write_csv(max_weights, here("write_data", "max_weights.csv"))
+```
+
+# Day 2
+
+## Tidy Data in Spreadsheets
+
+Today we are going to look at tidying data.
+
+The functions we use for tidying data are:
+
+* tidyr::spread()
+* tidyr::gather()
+
+### spread()
+
+spread() takes three principal arguments:
+1. the data
+2. the _key_ column variable will become the new column names
+3. the _value_ column variable which will fill the new column variables 
+
+Were going to use the surveys dataset
+
+```{r}
+library(tidyverse)
+surveys <- read_csv(here::here("read_data", "surveys.csv"))
+
+# create a wide data format of surveys using spread
+
+surveys_gw <- surveys %>%
+  drop_na(weight) %>% 
+  group_by(species_id) %>% 
+  summarize(mean_weight = mean(weight))
+
+str(surveys_gw)
+
+# Now we want to spread the data set out into a wide format
+
+wide_surveys_gw <- surveys_gw %>% 
+  spread(key = species_id, value = mean_weight)
+
+# Now we are going back to long from the wide data set that we just created.
+```
+
+### gather()
+
+gather() takes four arguments:
+1. data
+2. key
+3. value
+4. names of columns we use to fill the key variable (or drop)
+
+```{r}
+long_surveys <- wide_surveys_gw %>% 
+  gather(key = species_id, value = mean_weight) 
+```
+
+## Sending Tidy Data
+
+### Changelog
+
+* Update your changelog with changes you make to your raw data, or other significant changes or additions to your projects!
+
+### Data Dictionary
+* Create a data dictionary to define our variables
+
+
+```{r}
+tidy_gsi <- read_csv(here::here("write_data", "tidy_gsi.csv"))
 ```
 

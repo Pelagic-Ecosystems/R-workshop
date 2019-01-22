@@ -1,8 +1,17 @@
 # Changelog
 
-## [Unreleased]
+## [0.0.2]
+### Added
+- Received genetic stock id (GSI) results back from DFO
+
 ### Changed
-- Keep track of a significant changes here before releasing as a version
+- Tidy up gsi results
+  + Deleted the first three rows to make sure column headers were at the top
+  + Deleted blank rows and sample-run rows throught the dataset
+  + We extracted our hakai_id column from the Fish column using this formula in excel:
+    =CONCATENATE("U", TRIM(RIGHT(SUBSTITUTE(A3," ",REPT(" ",255)),255)))
+  + renamed columns to have no spaces, and be all lower case
+
 
 ## [0.0.1] - 2019-01-21
 ### Added
