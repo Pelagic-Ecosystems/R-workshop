@@ -1,0 +1,250 @@
+---
+title: "R Workshop"
+author: "Brett Johnson"
+date: "1/21/2019"
+output: html_document
+---
+
+## Creating objects in R
+
+```{r setup, warning=FALSE}
+
+```
+
+
+```{r arithmetic}
+
+3 + 5
+
+12 / 7 
+
+5 * 5
+
+# assign value to object 
+weight_kg <- 55
+
+2.2 * weight_kg
+
+weight_lb <- 2.2 * weight_kg
+
+sqrt(weight_kg)
+
+round(3.14159)
+
+round(3.141159, digits = 2) 
+
+round(3.14159, 2)
+```
+
+### Vectors and data types
+
+This section will describe some basic data types in R
+
+```{r}
+
+weight_g <- c(50,60,65,82)
+
+animals <- c("mouse", "rat", "dog")
+```
+
+Vector types in R:
+* numeric
+* character
+* logical (TRUE or FALSE)
+* Factors (categorical data) 
+* Dates 
+
+A vector is a data structure in R.
+
+Other data structures:
+* lists
+* data frames
+* matrices
+* of course vectors
+
+Often you want to conver lists and matrices to data frames or vectors.
+
+## Data Frames
+
+Next we're going to look at the structure of Data Frames.
+
+```{r}
+library(tidyverse)
+
+download.file(url="https://ndownloader.figshare.com/files/2292169", destfile = "read_data/portal_data_joined.csv") 
+
+library(here) # This package makes working directories and file paths easy
+
+surveys <- read_csv(here("read_data", "portal_data_joined.csv"))
+
+surveys
+
+str(surveys)
+
+dim(surveys)
+nrow(surveys)
+ncol(surveys)
+
+summary(surveys)
+```
+
+### Indexing and subsetting data frames
+
+First lets use square bracket subsetting.
+
+Square brackets are great for defining coordinates to extract data from. But what happens when the structure of the data frame. 
+
+```{r}
+
+# First define the row coordinate, and then the column. Also write row and then column
+surveys[1,1]
+
+surveys[1,6]
+
+# Defining only which element we want will return a data frame
+surveys[1]
+
+surveys[1:3, 7]
+
+# Give us all the rows and columns except column 7
+surveys[,-c(1:5)]
+```
+
+## Data Manipulation
+
+Key functions for data manipulation:
+
+* select(): subsetting columns
+* filter(): subsets of rows based on conditions
+* mutate(): create new columns, based on information from other columns 
+* group_by(): creates groups based on categorical data in a column 
+* summarize(): creates summary stats on grouped data
+* arrange(): sort results
+* count(): gives a count of discrete values
+
+```{r}
+select(surveys, plot_id, species_id, weight)
+
+# Negative subsetting
+select(surveys, -record_id)
+
+filter(surveys, year == 1995)
+
+
+```
+
+## Pipes
+
+Pipes allow you to chain together dplyr functions.
+
+Pipe: %>% or ctrl-shift-m
+
+```{r}
+# Write multiple arguments in a sentence using pipes
+surveys %>% 
+  filter(weight < 5) %>% 
+  select(species_id, sex, weight)
+
+surveys_sml <- surveys %>% 
+  filter(weight < 5) %>% 
+  select(species_id, sex, weight)
+```
+
+
+Challenge # 1
+
+Using pipes, subset the surveys dataframe to include animals collected 1995 an retain only the columns year, sex and weight.
+
+```{r challenge 1}
+
+```
+
+```{r}
+surveys %>% 
+  mutate(weight_kg = weight / 1000,
+         weight_kg2 = weight_kg * 2)
+
+surveys <- surveys %>% 
+  drop_na(weight) %>% 
+  mutate(mean_weight = mean(weight))
+
+mean(surveys$weight)
+```
+
+Challenge # 2
+
+Using the surveys data frame create a new dataframe contains only the species_id column, has a new column called hindfoot_half: contains values that are half the hindfoot_length values. Also, in the new hindfoot_half column there are no NAs and values are all less than 30.
+
+```{r}
+surveys_hindfoot_half <- surveys %>% 
+  drop_na(hindfoot_length) %>% 
+  mutate(hindfoot_half = hindfoot_length / 2) %>% 
+  filter(hindfoot_half < 30) %>% 
+  select(species_id, hindfoot_half)
+```
+
+
+```{r}
+surveys %>% 
+  group_by(sex) %>% 
+  summarize(mean_weight = mean(weight, na.rm = TRUE)) 
+
+# arrange by defaualt is done in ascending order
+surveys %>% 
+  group_by(sex, species_id) %>% 
+  summarize(mean_weight = mean(weight, na.rm = TRUE),
+            min_weight = min(weight, na.rm = TRUE)) %>% 
+  arrange(min_weight)
+
+```
+
+
+```{r}
+surveys %>% 
+  count(sex, sort = TRUE)
+
+# the above code is synonomous
+surveys %>% 
+  group_by(sex) %>% 
+  summarize(count = n())
+
+```
+
+Challenge # 3
+
+1. How many animals were caught in each plot_type surveyed.
+
+2. Use group_by and summarize to find the mean, min, and max of hindfoot length (using species_id) for each species. Also, add the number of observations (hint: see ?n)
+
+```{r}
+surveys %>% 
+  group_by(species_id) %>% 
+  summarize(mean_length = mean(hindfoot_length, na.rm = TRUE),
+            n())
+  
+```
+
+3. What was the heaviest animal measured in each year? Return the columns year, genus, species_id, and weight.
+
+```{r}
+
+surveys %>% 
+  group_by(year, genus, species_id) %>% 
+  summarize(max_weight = max(weight, na.rm = TRUE)) %>% 
+  arrange(desc(max_weight)) 
+
+max_weights <- surveys %>% 
+  drop_na(weight) %>% 
+  group_by(year) %>% 
+  filter(weight == max(weight)) %>% 
+  select(year, genus, species_id, species, weight) %>% 
+  arrange(year) %>% 
+  unique()
+
+```
+
+## Export our data
+```{r}
+write_csv(max_weights, here("write_data", "max_weights.csv"))
+```
+
