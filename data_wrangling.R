@@ -8,6 +8,7 @@ library(devtools)
 
 client <- hakaiApi::Client$new() # Follow stdout prompts to get an API token
 # Make a data request for chlorophyll data
+
 endpoint <- sprintf("%s/%s", client$api_root, "eims/views/output/chlorophyll?limit=-1")
 
 chla <- client$get(endpoint)
