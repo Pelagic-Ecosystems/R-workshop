@@ -867,8 +867,7 @@ surveys_wide %>%
 ## R Markdown
 
 
-
-## Data Quality Reports
+## Data Quality Tests
 
 Often, as we go through a data analysis we are checking the quality of the data as we go. You might, for example:
 * Count the number of NAs in specific columns
@@ -878,18 +877,81 @@ Often, as we go through a data analysis we are checking the quality of the data 
 
 It's often difficult to know at the end of an analysis project whether data quality has accidentally been compromised. It's also difficult to know what checks of the data have been done. Therefore it's a great idea to write tests into your data analysis as you go, such that if something becomes a problem, your diagnostic plots or tables will alert you!
 
-```{r}
+```{r Data quality tests}
+library(tidyverse)
+library(lubridate)
 library(obistools)
 
-names <- c("Abra alva", "Buccinum fusiforme", "Buccinum fusiforme", "Buccinum fusiforme", "hlqsdkf")
-match_taxa(names)
+survey_data <- read_csv("https://raw.githubusercontent.com/HakaiInstitute/jsp-data/master/data/survey_data.csv")
 
+seine_data <- read_csv("https://raw.githubusercontent.com/HakaiInstitute/jsp-data/master/data/seine_data.csv")
 
+fish_data <- read_csv("https://raw.githubusercontent.com/HakaiInstitute/jsp-data/master/data/fish_field_data.csv")
 
-
-
+survey_seines_fish <- left_join(survey_data, seine_data) %>% 
+  left_join(fish_data)
 ```
 
+### Location check
+
+```{r}
+no_fish_loc <- survey_seines_fish %>% filter(
+                                     is.na(survey_seines_fish$lat))
+```
+
+`r nrow(no_fish_loc)` fish have no location information associated with them.
+
+Check if any of your points are on land.
+
+```{r}
+seine_data <- seine_data %>% 
+  mutate(decimalLatitude = lat,
+         decimalLongitude = long)
+
+check_onland(seine_data)
+land_points <- check_onland(seine_data)
+#
+plot_map(land_points, zoom = TRUE)
+```
+
+
+### Statistical QC
+
+```{r}
+# Lets do some stats
+```
+
+### Relational Joins
+
+Do all seines have a survey to match to?
+
+```{r}
+#antijoin should yield zero
+seines_match_surveys <-nrow(anti_join(seine_data, survey_data))
+
+ifelse(seines_match_surveys == 0, "yes, seines match surveys", "error: no, some seines don't have matching surveys")
+```
+
+Do all lab fish have a matching field fish?
+
+```{r}
+fish_field_data <- read_csv(here("data", "fish_field_data.csv"), guess_max = 20000)
+fish_lab_data <- read_csv(here("data", "fish_lab_data.csv"), guess_max = 20000)
+
+lab_match_field <- nrow(anti_join(fish_lab_data, fish_field_data))
+
+ifelse(lab_match_field == 0, "yes, all lab fish have a matching field fish", "error: no, some lab fish do not have a mathing field fish")
+```
+
+Do all fish have a matching seine?
+
+```{r}
+fish_data <- left_join(fish_field_data, fish_lab_data, by = "ufn")
+
+n_umatched_fish <- nrow(anti_join(fish_data, seine_data, by = 'seine_id'))
+
+ifelse(lab_match_field == 0, "yes, all fish have a matching seine they came from", "error: no, not all fish have a seine associated with it")
+```
 
 ## Data Visualization Including Maps
 
@@ -1294,7 +1356,23 @@ ggplot() +
 
 ## Dates and Times in R
 
+https://r4ds.had.co.nz/dates-and-times.html
+
+### Creating date times
+
+### Date-time components
+
+### Time spans
+
+### Time zones
+
+## Factors
+
+https://r4ds.had.co.nz/factors.html
+
 ## Project-oriented workflows with R Studio and GitHub
+
+### R Studio Projects
 
 ## Collaborative Analysis Development Workflows
 
