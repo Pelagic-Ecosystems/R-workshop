@@ -870,6 +870,27 @@ surveys_wide %>%
 
 ## Data Quality Reports
 
+Often, as we go through a data analysis we are checking the quality of the data as we go. You might, for example:
+* Count the number of NAs in specific columns
+* Check measurements for outliers
+* Check sampling locations accuracy (are your sites on land?)
+* Check all date and time formats are valid
+
+It's often difficult to know at the end of an analysis project whether data quality has accidentally been compromised. It's also difficult to know what checks of the data have been done. Therefore it's a great idea to write tests into your data analysis as you go, such that if something becomes a problem, your diagnostic plots or tables will alert you!
+
+```{r}
+library(obistools)
+
+names <- c("Abra alva", "Buccinum fusiforme", "Buccinum fusiforme", "Buccinum fusiforme", "hlqsdkf")
+match_taxa(names)
+
+
+
+
+
+```
+
+
 ## Data Visualization Including Maps
 
 ### Plotting with **`ggplot2`**
@@ -1273,7 +1294,9 @@ ggplot() +
 
 ## Dates and Times in R
 
+## Project-oriented workflows with R Studio and GitHub
 
+## Collaborative Analysis Development Workflows
 
 
 
